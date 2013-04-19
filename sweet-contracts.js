@@ -3,31 +3,39 @@
 
 var C = contracts;
 
-macro p_guard {
+macro vbl {
     case $type => {
         C.check(function(x) {
             return typeof(x) === $type;
-        }, $type.toString().toUpperCase())
+        }, $type)//.toString().toUpperCase())
     }
+    // case ($($param) (->) ... -> $ret_type) => {
+    // 	C.fun($(vbl $param,) ... vbl $ret_type),
+    // 	function ($($param,
+    // }
 }
 
 macro def {
-    case $handle:ident ($param:ident : $type:lit) : $ret_type:lit {
+    case $handle:ident ($($param:ident : $type:lit) (,) ...) : $ret_type:lit {
+	    $($expression:expr) ...
             return $body:expr
     } => { 
         var $handle = C.guard(
-                C.fun(p_guard $type, p_guard $ret_type),
-                function ($param) { return $body });
+                C.fun($(vbl $type,) ... vbl $ret_type),
+                function ($($param,) ...) { 
+		    return $body });
     }
 }
 
-//var x = 3;
+// def foo(x:'number'):'number'{
+//     return x + x;
+// }
 
-def foo(x:'number'):'number'{
-    return x + x;
+def bar(x:'number', y:'string'):'string' {
+    return y;
 }
 
-document.writeln( foo('qux') );
+document.writeln( bar(5, 'five') );
 
 
 
