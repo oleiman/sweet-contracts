@@ -1,41 +1,56 @@
-// require('../contracts.js/src/stacktrace.js');
-// require('../contracts.js/lib/contracts.js');
 
 var C = contracts;
+var Num = 'number';
+var Str = 'string';
 
 macro vbl {
+    case ($p_type -> $ret_type) => {
+	C.fun(vbl $p_type, vbl $ret_type)
+    }
     case $type => {
         C.check(function(x) {
             return typeof(x) === $type;
-        }, $type)//.toString().toUpperCase())
+        }, $type)
     }
-    // case ($($param) (->) ... -> $ret_type) => {
-    // 	C.fun($(vbl $param,) ... vbl $ret_type),
-    // 	function ($($param,
+
+
+    // case ($($p_type) (->) ... -> $ret_type) => {
+    // 	C.fun([(vbl $p_type) (,) ...], vbl $ret_type)
     // }
 }
 
 macro def {
-    case $handle:ident ($($param:ident : $type:lit) (,) ...) : $ret_type:lit {
-	    $($expression:expr) ...
+    case $handle:ident ($($param:ident : $type:expr) (,) ...) : $ret_type {
+//	    $($expression:expr) ...
             return $body:expr
     } => { 
         var $handle = C.guard(
-                C.fun($(vbl $type,) ... vbl $ret_type),
-                function ($($param,) ...) { 
-		    return $body });
+            C.fun([(vbl $type) (,) ...], vbl $ret_type),
+            function ($($param,) ...) { 
+		return $body });
     }
 }
 
-// def foo(x:'number'):'number'{
-//     return x + x;
-// }
+def foo(x:Num):Num{
+    return x + x;
+}
 
-def bar(x:'number', y:'string'):'string' {
+document.writeln( foo(3) );
+
+def bar(x:Num, y:Str):Str {
     return y;
 }
 
 document.writeln( bar(5, 'five') );
+
+def qux(y:Str):(Num -> Str) {
+    return function (z) { return y; }
+}
+
+document.writeln( qux('quxer')(7) );
+document.writeln( qux('quxer')('7') );
+
+
 
 
 
