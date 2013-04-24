@@ -13,10 +13,15 @@ macro vbl {
     }
 }
 
+macro kvp {
+    case $key $value => {
+	$key: $value
+    }
+}
 
-// TODO: seem to be stuck with 'some arbitrary name' here...
-//   where would the name come from? Is there metadata associated
-//   with the macro parameter?
+// TODO: we're stuck with 'some arbitrary name' here. This will be
+//       fixed when sweet.js gets some new features
+
 macro bang {
     case ($param:ident) -> $body:expr => {
 	C.check(function ($param) $body, 'some arbitrary name')
@@ -35,10 +40,6 @@ macro def {
 		function ($($param,) ...) $body);
 	}
 }
-
-// JSNOOB: can't figure out the correct idiom for including my 
-//         macros in another js file, so I'm leaving the tests
-//         here, for now.
 
 //  let the system know where the contracts object is hanging out
 setupContracts(contracts)
@@ -83,6 +84,7 @@ document.writeln(jux(2)(
 	return 'joboxer'.charAt(n);
     })
 );
+
 // FAIL - but not in the way that I would like...
 //  document.writeln(jux(2)(
 //      function(s){
@@ -94,9 +96,9 @@ document.writeln(jux(2)(
 def get(o:Obj, f:Str):Str {
     return o[f];
 }
-var obj = { foo: 'bar', baz: 'quux', 'jazz': 23};
+var o = { foo: 'bar', baz: 'quux', 'jazz': 23};
 // SUCCESS
-document.writeln(get(obj, 'baz'));
+document.writeln(get(o, 'baz'));
 // FAIL
-//  document.writeln(get(obj, 'jazz'));
+//  document.writeln(get(o, 'jazz'));
 
