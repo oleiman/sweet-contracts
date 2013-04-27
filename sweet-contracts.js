@@ -8,6 +8,12 @@ macro vbl {
     case ($p_type -> $ret_type) => {
 	C.fun(vbl $p_type, vbl $ret_type)
     }
+    case ($ktp (,) ...) => {
+	C.object({$ktp (,) ... })
+    }
+    // case ($key % $val_type) = > {
+    // 	C.object({$key: vbl $val_type})
+    // }
     case $comb => {
 	C.$comb
     }
@@ -93,12 +99,12 @@ document.writeln(jux(2)(
 //  );
 
 // function which takes an object parameter
-def get(o:Obj, f:Str):Str {
-    return o[f];
+def get(o:Obj, f:Str):(Num) {
+    return {foo: o[f]};
 }
 var o = { foo: 'bar', baz: 'quux', 'jazz': 23};
 // SUCCESS
-document.writeln(get(o, 'baz'));
+document.writeln(get(o, 'foo'));
 // FAIL
 //  document.writeln(get(o, 'jazz'));
 
