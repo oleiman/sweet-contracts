@@ -11,6 +11,9 @@ macro vbl {
     case ($($key => $type) (,) ...) => {
 	C.object({$($key: (vbl $type),) ...})
     }
+    case [$type (,) ...] => {
+	C.arr([(vbl $type) (,) ...])
+    }
     case $comb => {
 	C.$comb
     }
