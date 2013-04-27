@@ -16,12 +16,6 @@ macro vbl {
     }
 }
 
-macro kvp {
-    case $key $value => {
-	$key: $value
-    }
-}
-
 // TODO: we're stuck with 'some arbitrary name' here. This will be
 //       fixed when sweet.js gets some new features
 
