@@ -8,12 +8,9 @@ macro vbl {
     case ($p_type -> $ret_type) => {
 	C.fun(vbl $p_type, vbl $ret_type)
     }
-    case ($ktp (,) ...) => {
-	C.object({$ktp (,) ... })
+    case ($($key => $type) (,) ...) => {
+	C.object({$($key: (vbl $type),) ...})
     }
-    // case ($key % $val_type) = > {
-    // 	C.object({$key: vbl $val_type})
-    // }
     case $comb => {
 	C.$comb
     }
@@ -76,6 +73,7 @@ def qux(y:Str):(Num2 -> Str) {
 }
 // SUCCESS
 document.writeln(qux('quxer')(7));
+
 // FAIL
 // document.writeln(qux('quxer')('seven'));
 
@@ -91,7 +89,7 @@ document.writeln(jux(2)(
     })
 );
 
-// FAIL - but not in the way that I would like...
+// FAIL - but not in the most intuitive way...
 //  document.writeln(jux(2)(
 //      function(s){
 //  	return s;
@@ -99,12 +97,16 @@ document.writeln(jux(2)(
 //  );
 
 // function which takes an object parameter
-def get(o:Obj, f:Str):(Num) {
-    return {foo: o[f]};
+def get(o:(foo => Str, 
+	   baz => (quux => (Str -> (noisy => Str))), 
+	   jazz => Num)):(quux => (Str -> (noisy => Str))) {
+    return o['baz'];
 }
-var o = { foo: 'bar', baz: 'quux', 'jazz': 23};
 // SUCCESS
-document.writeln(get(o, 'foo'));
+var o = { foo: 'bar', baz: {quux: function (str) {return {noisy: str}}}, 'jazz': 23 };
+document.writeln(get(o)['quux']('neighbors')['noisy']);
+
 // FAIL
-//  document.writeln(get(o, 'jazz'));
+// var q = { foo: 'jazz', baz: 'tux', 'jazz': 'krooks' };
+// document.writeln(get(q));
 
