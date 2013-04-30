@@ -11,11 +11,14 @@ macro vbl {
     case ($($key => $type) (,) ...) => {
 	C.object({$($key: (vbl $type),) ...})
     }
+    // array contracts are sort of lame right now.
+    // Currently supporting contracts for homogeneous arrays and
+    // for arrays whose first n elements fulfill the contract (the rest are not checked)
     case [$type (,) ...] => {
 	C.arr([(vbl $type) (,) ...])
     }
-    case [$type ...] => {
-	C.arr([___((vbl $type))])
+    case [$type &] => {
+    	C.arr([C.___(vbl $type)])
     }
     case $comb => {
 	C.$comb
