@@ -17,7 +17,7 @@ macro vbl {
     case [$type (,) ...] => {
 	C.arr([(vbl $type) (,) ...])
     }
-    case [$type &] => {
+    case [$type $[...]] => {
     	C.arr([C.___(vbl $type)])
     }
     case $comb => {
