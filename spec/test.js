@@ -61,8 +61,6 @@ document.writeln(jux(2)(
 //  );
 
 // function which takes an object parameter
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 def get(o:(foo => Str, 
 	   baz => (quux => (Str -> (noisy => Str))), 
 	   jazz => Num)):(quux => (Str -> (noisy => Str))) {
@@ -72,26 +70,6 @@ def get(o:(foo => Str,
 }
 // SUCCESS
 var o = { foo: 'bar', baz: {quux: function (str) {return {noisy: str};}}, 'jazz': 23 };
-document.writeln(get(o)['quux']('neighbors')['noisy']);
-
-// FAIL
-// var q = { foo: 'jazz', baz: 'tux', 'jazz': 'krooks' };
-// document.writeln(get(q));
-=======
-=======
->>>>>>> Stashed changes
-// try colons again!!!
-// BUG: when returning o['baz'] my contract claims that the 'quux'
-//      field is missing, which it clearly is not
-def get(o:(foo => Str, 
-	   baz => (quux => (Str -> (noisy => Str))), 
-	   jazz => Num)):(quux => (Str -> (noisy => Str))) {
-    return {quux: function(s) { return {noisy: s}; }};
-//     return o['baz'];
-}
-// SUCCESS
-var o = { foo: 'bang', baz: {quux: function (str) {return {noisy: str};}}, 'jazz': 23 };
-//document.writeln(o['baz']['quux']('neighbors')['noisy']);
 document.writeln(get(o)['quux']('neighbors')['noisy']);
 
 // FAIL
@@ -120,7 +98,8 @@ def index2(a:[Str &], b:Num):Num {
 document.writeln(index(['foo', 'bar', 'baz', 'quux'], 2));
 
 //FAILURE
-document.writeln(index([23, 'bar', 'baz'], 0));
+// document.writeln(index([23, 'bar', 'baz'], 0));
+
 // interesting point about the semantics of the array combinators:
 // the contract doesn't fail until you try to access a particular
 //    element of the array. So, the following passes just fine:
@@ -134,7 +113,3 @@ document.writeln(index([23, 'bar', 'baz'], 2));
 //optional arguments/obj properties (?) , dependent functions (bang), ctor contracts, th
 //is contract, recursive objects (see self contract), pre/post (use '|' to signal), 
 //object invariants, and/or combinators
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
