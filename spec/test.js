@@ -13,12 +13,13 @@ document.writeln(foo(3));
 // FAIL
 // document.writeln(foo('3'));
 
-// multiple parameter contracts
-def bar(x:Num2, y:Str):Str {
-    return y;
+// optional parameter
+def bar(x:Num2, y:(Str ?)):Num {
+    return x;
 }
 // SUCCESS
 document.writeln(bar(5, 'five'));
+document.writeln(bar(5));
 // FAIL
 // document.writeln(bar('five', 5));
 

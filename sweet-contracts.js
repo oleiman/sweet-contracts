@@ -4,6 +4,12 @@ macro setupContracts {
     }
 }
 
+macro opt {
+    case $type => {
+	C.opt($type)
+    }
+}
+
 macro vbl {
     case ($p_type -> $ret_type) => {
 	C.fun(vbl $p_type, vbl $ret_type)
@@ -14,8 +20,11 @@ macro vbl {
     case [$type (,) ...] => {
 	C.arr([(vbl $type) (,) ...])
     }
+    case ($comb ?) => {
+	C.opt(C.$comb)
+    }
     case $comb => {
-	C.$comb
+    	C.$comb
     }
     // bugs out when I try to use ellipses. 
     // Matches this pattern all the time
@@ -45,3 +54,4 @@ macro def {
 		function ($($param,) ...) $body);
 	}
 }
+
