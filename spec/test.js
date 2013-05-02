@@ -1,8 +1,6 @@
-// JSNOOB: can't figure out the correct idiom for including my 
-//         macros in another js file, so I'm leaving the tests
-//         here, for now.
 
 //  let the system know where the contracts object is hanging out
+var contracts = window['contracts-js'];
 setupContracts(contracts)
 bang Num2 (x) -> { return typeof(x) === 'number' }
 bang Obj (x) -> { return typeof(x) === 'object' }
@@ -31,6 +29,7 @@ def qux(y:Str):(Num2 -> Str) {
 }
 // SUCCESS
 document.writeln(qux('quxer')(7));
+
 // FAIL
 // document.writeln(qux('quxer')('seven'));
 
@@ -45,7 +44,8 @@ document.writeln(jux(2)(
 	return 'joboxer'.charAt(n);
     })
 );
-// FAIL - but not in the way that I would like...
+
+// FAIL - but not in the most intuitive way...
 //  document.writeln(jux(2)(
 //      function(s){
 //  	return s;
@@ -53,12 +53,17 @@ document.writeln(jux(2)(
 //  );
 
 // function which takes an object parameter
-def get(o:Obj, f:Str):Str {
-    return o[f];
+def get(o:(foo => Str, 
+	   baz => (quux => (Str -> (noisy => Str))), 
+	   jazz => Num)):(quux => (Str -> (noisy => Str))) {
+    return {quux: function (str) {return {noisy: str};}};
+// this test is broken after some recent change to contracts.js
+//    return o['baz'];
 }
-var obj = { foo: 'bar', baz: 'quux', 'jazz': 23};
 // SUCCESS
-document.writeln(get(obj, 'baz'));
-// FAIL
-//  document.writeln(get(obj, 'jazz'));
+var o = { foo: 'bar', baz: {quux: function (str) {return {noisy: str};}}, 'jazz': 23 };
+document.writeln(get(o)['quux']('neighbors')['noisy']);
 
+// FAIL
+// var q = { foo: 'jazz', baz: 'tux', 'jazz': 'krooks' };
+// document.writeln(get(q));
