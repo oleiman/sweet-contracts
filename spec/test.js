@@ -106,11 +106,12 @@ document.writeln(index(['foo', 'bar', 'baz', 'quux'], 2));
 //    element of the array. So, the following passes just fine:
 document.writeln(index([23, 'bar', 'baz'], 2));
 
-// This is taken directly from the contracts.js test suite
-// and doesn't throw an error. Something is wonky in contracts...
-// var ar = C.guard(C.arr([C.Str, C.Bool]), [false, "foo", 42]);
-// document.writeln(ar[0]);
+//SUCCESS
+def inc (x:Num):(bang (result, args) -> { result > args[0]; }) {
+    return x + 1;
+}
 
+document.writeln(inc(7));
 //optional arguments/obj properties (?) , dependent functions (bang), ctor contracts, th
 //is contract, recursive objects (see self contract), pre/post (use '|' to signal), 
 //object invariants, and/or combinators

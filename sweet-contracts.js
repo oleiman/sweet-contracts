@@ -44,13 +44,28 @@ macro bang {
     case $name:ident ($param:ident) -> $body:expr => {
 	C.$name = C.check(function ($param) $body, 'some arbitrary name')
     }
+    case ($result:ident, $args) -> $body:expr => {
+    	function ($args) { 
+    	    return C.check(
+    		function ($result) { return $body });
+    	}
+    }
+}
+
+macro ret {
+    case function $body => {
+    	function $body
+    }
+    case $comb => {
+	vbl $comb
+    }
 }
 
 macro def {
     case $handle:ident ($($param:ident : $type) (,) ...) : $ret_type $body
  	=> { 
             var $handle = C.guard(
-		C.fun([(vbl $type) (,) ...], vbl $ret_type),
+		C.fun([(vbl $type) (,) ...], ret $ret_type),
 		function ($($param,) ...) $body);
 	}
 }
