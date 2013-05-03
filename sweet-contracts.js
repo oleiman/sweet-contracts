@@ -23,8 +23,15 @@ macro vbl {
     case ($comb ?) => {
 	C.opt(C.$comb)
     }
+    case (! ($args:ident, $result:ident) -> $check:expr) => {
+	function ($args) { 
+    	    return C.check(
+		function ($result) 
+	            $check, 'foobar')
+	}
+    }
     case $comb => {
-    	C.$comb
+	C.$comb 
     }
     // bugs out when I try to use ellipses. 
     // Matches this pattern all the time
@@ -38,35 +45,28 @@ macro vbl {
 
 macro bang {
     case ($param:ident) -> $body:expr => {
-	C.check(function ($param) $body, 'some arbitrary name')
+	C.check(function ($param) $body, 'some arbitrary name');
     }
-    
     case $name:ident ($param:ident) -> $body:expr => {
-	C.$name = C.check(function ($param) $body, 'some arbitrary name')
-    }
-    case ($result:ident, $args) -> $body:expr => {
-    	function ($args) { 
-    	    return C.check(
-    		function ($result) { return $body });
-    	}
-    }
-}
-
-macro ret {
-    case function $body => {
-    	function $body
-    }
-    case $comb => {
-	vbl $comb
+    	C.$name = C.check(function ($param) $body, 'some arbitrary name')
     }
 }
 
 macro def {
-    case $handle:ident ($($param:ident : $type) (,) ...) : $ret_type $body
- 	=> { 
-            var $handle = C.guard(
-		C.fun([(vbl $type) (,) ...], ret $ret_type),
-		function ($($param,) ...) $body);
-	}
+    case $handle:ident ($($param:ident : $type) (,) ...) : $ret_type $body => { 
+        var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
+	    function ($($param,) ...) $body);
+    }
 }
 
+var contracts = window['contracts-js'];
+setupContracts(contracts)
+//bang Dep (result, args) -> { result > args[0]; }
+
+def inc (x:Num):(!(args, result) -> { return result > args[0]; }) {
+//(function (result) { result > args[0]; })) {
+    return x + 1;
+}
+
+document.writeln(inc(7));

@@ -106,12 +106,21 @@ document.writeln(index(['foo', 'bar', 'baz', 'quux'], 2));
 //    element of the array. So, the following passes just fine:
 document.writeln(index([23, 'bar', 'baz'], 2));
 
-//SUCCESS
+// SUCCESS
 def inc (x:Num):(bang (result, args) -> { result > args[0]; }) {
     return x + 1;
 }
 
 document.writeln(inc(7));
-//optional arguments/obj properties (?) , dependent functions (bang), ctor contracts, th
-//is contract, recursive objects (see self contract), pre/post (use '|' to signal), 
+
+// dependent function contract
+def inc (x:Num):(!(args, result) -> { return result > args[0]; }) {
+    return x + 1;
+}
+
+// SUCCESS
+document.writeln(inc(7));
+
+//optional obj properties (?), ctor contracts, this contract, 
+//recursive objects (see self contract), pre/post (use '|' to signal), 
 //object invariants, and/or combinators
