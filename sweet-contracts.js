@@ -20,7 +20,7 @@ macro vbl {
     case [$type (,) ...] => {
 	C.arr([(vbl $type) (,) ...])
     }
-    case ($comb ?) => {
+    case (? $comb) => {
 	C.opt(C.$comb)
     }
     case (! ($args:ident, $result:ident) -> $check:expr) => {
@@ -59,14 +59,3 @@ macro def {
 	    function ($($param,) ...) $body);
     }
 }
-
-var contracts = window['contracts-js'];
-setupContracts(contracts)
-//bang Dep (result, args) -> { result > args[0]; }
-
-def inc (x:Num):(!(args, result) -> { return result > args[0]; }) {
-//(function (result) { result > args[0]; })) {
-    return x + 1;
-}
-
-document.writeln(inc(7));

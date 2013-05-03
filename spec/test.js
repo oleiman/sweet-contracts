@@ -4,7 +4,7 @@ setupContracts(contracts)
 bang Num2 (x) -> { return typeof(x) === 'number' }
 bang Obj (x) -> { return typeof(x) === 'object' }
 
-// parameter and return value contract
+//parameter and return value contract
 def foo(x:Num2):Num2 {
     return x + x;
 }
@@ -14,7 +14,7 @@ document.writeln(foo(3));
 // document.writeln(foo('3'));
 
 // optional parameter
-def bar(x:Num2, y:(Str ?)):Num {
+def bar(x:Num2, y:(?Str)):Num {
     return x;
 }
 // SUCCESS
@@ -105,13 +105,6 @@ document.writeln(index(['foo', 'bar', 'baz', 'quux'], 2));
 // the contract doesn't fail until you try to access a particular
 //    element of the array. So, the following passes just fine:
 document.writeln(index([23, 'bar', 'baz'], 2));
-
-// SUCCESS
-def inc (x:Num):(bang (result, args) -> { result > args[0]; }) {
-    return x + 1;
-}
-
-document.writeln(inc(7));
 
 // dependent function contract
 def inc (x:Num):(!(args, result) -> { return result > args[0]; }) {
