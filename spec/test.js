@@ -114,6 +114,24 @@ def inc (x:Num):(!(args, result) -> { return result > args[0]; }) {
 // SUCCESS
 document.writeln(inc(7));
 
+// //we get standalone objects pretty much for free
+obj (a => Num, b => Str) 
+var q = {a: 23, b: 'quux'};
+
+//object with function that has pre and post conditions
+// worth noting that, at this point, object must have both
+obj (a => Num, 
+     b => ((Num -> Num) |-
+         pre: (!(o) -> o.a > 10)
+         post: (!(o) -> o.a > 20)))
+var ppo = {a: 12, b: function (x) {return this.a = this.a + x} };
+
+//SUCCESS
+ppo.b(12);
+
+//FAILURE
+// ppo.b(5);
+
 //optional obj properties (?), ctor contracts, this contract, 
 //recursive objects (see self contract), pre/post (use '|' to signal), 
 //object invariants, and/or combinators
