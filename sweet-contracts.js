@@ -22,7 +22,7 @@ macro vbl {
 	    pre: vbl $pre_cond,
 	    post: vbl $post_cond})
     }
-    case ($($key => $type) (,) ...) => {
+    case ($($key $[:] $type) (,) ...) => {
 	C.object({$($key: (vbl $type),) ...})
     }
     case [$type (,) ...] => {
@@ -73,9 +73,45 @@ macro def {
     }
 }
 
+macro fun {
+    case ($($param:ident : $type) (,) ...) : $ret_type var $handle:ident = function $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
+	    function $args $body);
+    }
+    case ($($param:ident : $type) (,) ...) : $ret_type function $handle $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
+	    function $args $body);
+    }
+}
+
 macro obj {
     case $contract var $handle:ident = $obj => {
 	var $handle = C.guard(vbl $contract, $obj)
     }
 }
 
+var contracts = window['contracts-js'];
+setupContracts(contracts)
+
+fun (f:Num):Num
+var foo = function (f) {
+    return f + 2;
+}
+
+def foo(x:Num):Num {
+    return x + x;
+}
+
+obj (a: Num, 
+     b: ((Num -> Num) |-
+         pre: (!(o) -> o.a > 10)
+         post: (!(o) -> o.a > 20)))
+var ppo = {a: 12, b: function (x) {return this.a = this.a + x} };
+
+
+// fun (f:Num):Num
+// function bar (f) {
+//     return f + 2;
+// }
