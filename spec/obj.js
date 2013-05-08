@@ -1,4 +1,6 @@
-//  let the system know where the contracts object is hanging out
+// tests surrounding objects/arrays
+//  -- both as arguments and standalone (objects anyway...)
+
 var contracts = window['contracts-js'];
 setupContracts(contracts)
 
