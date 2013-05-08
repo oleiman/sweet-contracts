@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sjs='/home/oren/Documents/code/sweet.js/bin/sjs'
+
+$sjs -o contract.test.js -m ../sweet-contracts.js $1.js
