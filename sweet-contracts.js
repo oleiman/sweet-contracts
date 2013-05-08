@@ -15,7 +15,7 @@ macro vbl {
 	C.fun(vbl $p_type, vbl $ret_type)
     }
     //TODO: find an elegant way to allow a method to have pre/post (not both)
-    case (($p_type -> $ret_type) $[|-]
+    case (($p_type -> $ret_type) $[|]
              pre:  $pre_cond
              post: $post_cond) => {
 	C.fun([vbl $p_type], vbl $ret_type, {
@@ -48,7 +48,7 @@ macro vbl {
     }
     // bugs out when I try to use ellipses. 
     // Matches this pattern all the time
-    case [$type &] => {
+    case [$type $[...]] => {
     	C.arr([C.___(vbl $type)])
     }
 }
@@ -74,12 +74,12 @@ macro def {
 }
 
 macro fun {
-    case ($($param:ident : $type) (,) ...) : $ret_type var $handle:ident = function $args $body => {
+    case ($($param:ident : $type) (,) ...) -> $ret_type var $handle:ident = function $args $body => {
 	var $handle = C.guard(
 	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
 	    function $args $body);
     }
-    case ($($param:ident : $type) (,) ...) : $ret_type function $handle $args $body => {
+    case ($($param:ident : $type) (,) ...) -> $ret_type function $handle $args $body => {
 	var $handle = C.guard(
 	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
 	    function $args $body);
@@ -92,26 +92,5 @@ macro obj {
     }
 }
 
-var contracts = window['contracts-js'];
-setupContracts(contracts)
-
-fun (f:Num):Num
-var foo = function (f) {
-    return f + 2;
-}
-
-def foo(x:Num):Num {
-    return x + x;
-}
-
-obj (a: Num, 
-     b: ((Num -> Num) |-
-         pre: (!(o) -> o.a > 10)
-         post: (!(o) -> o.a > 20)))
-var ppo = {a: 12, b: function (x) {return this.a = this.a + x} };
-
-
-// fun (f:Num):Num
-// function bar (f) {
-//     return f + 2;
-// }
+// var contracts = window['contracts-js'];
+// setupContracts(contracts)
