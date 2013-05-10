@@ -4,12 +4,6 @@ macro setupContracts {
     }
 }
 
-macro opt {
-    case $type => {
-	C.opt($type)
-    }
-}
-
 macro vbl {
     case ($p_type -> $ret_type) => {
 	C.fun(vbl $p_type, vbl $ret_type)
