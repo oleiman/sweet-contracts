@@ -28,11 +28,27 @@ obj (a: Num,
      b: ((Num -> Num) |
         pre: (!(o) -> o.a > 10)
         post: (!(o) -> o.a > 20)))
-var ppo = {a: 12, b: function (x) {return this.a = this.a + x} };
+var ppo = {a: 12, b: function (x) {return this.a = this.a + x;} };
+
+obj (a: Num,
+     b: ((Num -> Num) |
+	 post: (!(o) -> o.a > 20)))
+var post = {a: 12, b: function (x) {return this.a = this.a + x;} };
+
+obj (a: Num,
+     b: ((Num -> Num) |
+	 pre: (!(o) -> o.a > 10)))
+var pre = {a: 12, b: function (x) {return this.a = this.a - x;} };
 
 //SUCCESS
-ppo.b(12);
+ppo.b(10);
+post.b(10);
+pre.b(3);
 
 //FAILURE
-// ppo.b(5);
+// pre.b(1);
+// post.a = post.a - 14;
+// post.b(1);
+// ppo.a = post.a - 13;
+// ppo.b(1);
 

@@ -14,12 +14,23 @@ macro vbl {
     case ($p_type -> $ret_type) => {
 	C.fun(vbl $p_type, vbl $ret_type)
     }
-    //TODO: find an elegant way to allow a method to have pre/post (not both)
+    // TODO: find an elegant way to allow a method to have 
+    //  pre/post (not both), if possible
     case (($p_type -> $ret_type) $[|]
              pre:  $pre_cond
              post: $post_cond) => {
 	C.fun([vbl $p_type], vbl $ret_type, {
 	    pre: vbl $pre_cond,
+	    post: vbl $post_cond})
+    }
+    case (($p_type -> $ret_type) $[|]
+             pre:  $pre_cond) => {
+	C.fun([vbl $p_type], vbl $ret_type, {
+	    pre: vbl $pre_cond})
+    }
+    case (($p_type -> $ret_type) $[|]
+             post: $post_cond) => {
+	C.fun([vbl $p_type], vbl $ret_type, {
 	    post: vbl $post_cond})
     }
     case ($($key $[:] $type) (,) ...) => {
