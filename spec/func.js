@@ -37,6 +37,45 @@ document.writeln(bar(5));
 // FAIL
 // document.writeln(bar('five', 5));
 
+// contract alternation
+fun (x:(Num or Str)) -> (Num or Str)
+function quacks(x) {
+    return x;
+}
+
+//SUCCESS
+document.writeln(quacks('duck'));
+document.writeln(quacks(23));
+
+//FAILURE - Note that the contract fails in the second contract
+//          passed to 'or'
+// document.writeln(quacks(true));
+
+// alternation chain
+fun (x:((Num or Str) or Bool)) -> ((Num or Str) or Bool)
+function really_quacks(x) {
+    return x;
+}
+
+//SUCCESS
+document.writeln(really_quacks('duck'));
+document.writeln(really_quacks(23));
+// passes now
+document.writeln(really_quacks(true));
+
+// alternation mixed with conjunction
+fun (x: ((Num and Even) or Str)) -> ((Num and Odd) or Str)
+function gurgles(x) {
+    return x + 1;
+}
+
+//SUCCESS
+document.writeln(gurgles(22));
+document.writeln(gurgles('quack'));
+
+//FAILURE
+document.writeln(gurgles(3));
+
 // contract to return a function
 fun (y:Str) -> (Num2 -> Str)
 function qux(y) {
@@ -91,4 +130,5 @@ document.writeln(jux(2)(
 //  	return s;
 //      })
 //  );
+
 

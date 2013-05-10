@@ -42,6 +42,12 @@ macro vbl {
     case (? $comb) => {
 	C.opt(C.$comb)
     }
+    case ($comb1 or $comb2) => {
+	C.or(vbl $comb1, vbl $comb2)
+    }
+    case ($comb1 and $comb2) => {
+	C.and(vbl $comb1, vbl $comb2)
+    }
     case (! ($arg:ident) -> $check:expr) => {
 	function ($arg) {
 	    return $check;
