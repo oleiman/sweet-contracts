@@ -70,3 +70,15 @@ document.writeln(index(['foo', 'bar', 'baz', 'quux'], 2));
 // the contract doesn't fail until you try to access a particular
 //    element of the array. So, the following passes just fine:
 document.writeln(index([23, 'bar', 'baz'], 2));
+
+// optional object property
+fun ((a: Num, b: (?Str), c: (qux: Str))) -> Str
+function optP(o) {
+    return o.c.qux;
+}
+
+//SUCCESS
+optP({a: 23, c: {qux: 'like a duck'}});
+
+// FAILURE
+// optP({a: 23});
