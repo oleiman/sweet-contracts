@@ -99,6 +99,28 @@ macro fun {
 	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
 	    function $args $body);
     }
+    // ctor
+    case ($type (,) ...) ==> $ret_type var $handle:ident = function $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type, {newOnly: true}),
+	    function $args $body);
+    }
+    case ($type (,) ...) ==> $ret_type function $handle $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type, {newOnly: true}),
+	    function $args $body);
+    }
+    // no ctor
+    case ($type (,) ...) --> $ret_type var $handle:ident = function $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type, {callOnly: true}),
+	    function $args $body);
+    }
+    case ($type (,) ...) --> $ret_type function $handle $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type, {callOnly: true}),
+	    function $args $body);
+    }
 }
 
 macro obj {

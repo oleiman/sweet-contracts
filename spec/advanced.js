@@ -18,6 +18,25 @@ function inc(x) {
 // SUCCESS
 document.writeln(inc(7));
 
+// constructor
+fun (Num) ==> (a: Num)
+function NumWrapper(n) {
+    return {a: n};
+}
+// not a constructor
+fun (Num) --> Num
+function numBack(n) {
+    return n;
+}
+
+// SUCCESS
+var intObj = new NumWrapper(23);
+var intThing = numBack(23);
+
+// FAILURE
+// var intObj = NumWrapper(23);
+// var intThing = new numBack(23);
+
 // //we get standalone objects pretty much for free
 obj (a: Num, b: Str) 
 var q = {a: 23, b: 'quux'};
