@@ -103,6 +103,19 @@ macro fun {
     }
 }
 
+macro fun {
+    case ($type (,) ...) -> $ret_type var $handle:ident = function $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
+	    function $args $body);
+    }
+    case ($type (,) ...) -> $ret_type function $handle $args $body => {
+	var $handle = C.guard(
+	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
+	    function $args $body);
+    }
+}
+
 macro obj {
     case $contract var $handle:ident = $obj => {
 	var $handle = C.guard(vbl $contract, $obj)
@@ -111,3 +124,15 @@ macro obj {
 
 // var contracts = window['contracts-js'];
 // setupContracts(contracts)
+
+// // alternation chain
+// fun (((Num or Str) or Bool)) -> ((Num or Str) or Bool)
+// function really_quacks(x) {
+//     return x;
+// }
+
+// //SUCCESS
+// document.writeln(really_quacks('duck'));
+// document.writeln(really_quacks(23));
+// // passes now
+// document.writeln(really_quacks(true));

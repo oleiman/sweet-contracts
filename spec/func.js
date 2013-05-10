@@ -7,7 +7,7 @@ bang Num2 (x) -> { return typeof(x) === 'number' }
 bang Obj (x) -> { return typeof(x) === 'object' }
 
 //parameter and return value contract
-fun (x:Num2) -> Num2
+fun (Num2) -> Num2
 function foo(x) {
     return x + x;
 }
@@ -22,7 +22,7 @@ document.writeln(foo(3));
 // document.writeln(foo('3'));
 
 // optional parameter
-fun (x:Num2, y:(?Str)) -> Num 
+fun (Num2, (?Str)) -> Num 
 function bar(x, y) {
     return x;
 }
@@ -38,7 +38,7 @@ document.writeln(bar(5));
 // document.writeln(bar('five', 5));
 
 // contract alternation
-fun (x:(Num or Str)) -> (Num or Str)
+fun ((Num or Str)) -> (Num or Str)
 function quacks(x) {
     return x;
 }
@@ -52,7 +52,7 @@ document.writeln(quacks(23));
 // document.writeln(quacks(true));
 
 // alternation chain
-fun (x:((Num or Str) or Bool)) -> ((Num or Str) or Bool)
+fun (((Num or Str) or Bool)) -> ((Num or Str) or Bool)
 function really_quacks(x) {
     return x;
 }
@@ -64,7 +64,7 @@ document.writeln(really_quacks(23));
 document.writeln(really_quacks(true));
 
 // alternation mixed with conjunction
-fun (x: ((Num and Even) or Str)) -> ((Num and Odd) or Str)
+fun (((Num and Even) or Str)) -> ((Num and Odd) or Str)
 function gurgles(x) {
     return x + 1;
 }
@@ -77,7 +77,7 @@ document.writeln(gurgles('quack'));
 document.writeln(gurgles(3));
 
 // contract to return a function
-fun (y:Str) -> (Num2 -> Str)
+fun (Str) -> (Num2 -> Str)
 function qux(y) {
     return function (z) { return y; }
 }
@@ -93,7 +93,7 @@ document.writeln(qux('quxer')(7));
 // document.writeln(qux('quxer')('seven'));
 
 // higher order function
-fun (f:(Num2->Str), n:Num) -> Str 
+fun ((Num2->Str), Num) -> Str 
 function applyit(f, n) {
     return f(n);
 }
@@ -108,7 +108,7 @@ document.writeln(applyit(function(n) {
 }, 23));
 
 // function which returns a higher order function
-fun (y:Num) -> ((Num->Str)->Str)
+fun (Num) -> ((Num->Str)->Str)
 function jux(y) {
     return function(z) { return z(y); }
 }
@@ -130,5 +130,3 @@ document.writeln(jux(2)(
 //  	return s;
 //      })
 //  );
-
-

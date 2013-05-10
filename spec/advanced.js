@@ -6,7 +6,7 @@ var contracts = window['contracts-js'];
 setupContracts(contracts)
 
 // dependent function contract
-fun (x:Num) -> (!(args, result) -> { return result > args[0]; })
+fun (Num) -> (!(args, result) -> { return result > args[0]; })
 function inc(x) {
     return x + 1;
 }

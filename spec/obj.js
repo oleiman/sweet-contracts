@@ -5,9 +5,9 @@ var contracts = window['contracts-js'];
 setupContracts(contracts)
 
 // function which takes an object parameter
-fun (o: (foo: Str,
-	 baz: (quux: (Str -> (noisy: Str))),
-	 jazz: Num)) -> (quux: (Str -> (noisy: Str)))
+fun ((foo: Str,
+      baz: (quux: (Str -> (noisy: Str))),
+      jazz: Num)) -> (quux: (Str -> (noisy: Str)))
 function get(o) {
     return {quux: function (str) { 
 	             return {noisy: str}; 
@@ -33,7 +33,7 @@ document.writeln(get(o)['quux']('neighbors')['noisy']);
 // document.writeln(get(q));
 
 //function which takes a basic array parameter
-fun (a:[Str, Num], b:Num) -> Str
+fun ([Str, Num], Num) -> Str
 function index(a, b) {
     return a[b];
 }
@@ -51,7 +51,7 @@ document.writeln(index(['jazz', true, 23], 0));
 //FAILURE - or it should, anyway. This feature is not working as expected
 //document.writeln(index([], 0));
 
-fun (a:[Str...], b:Num) -> Str 
+fun ([Str...], Num) -> Str 
 function index2(a, b) {
     return a[b];
 }
