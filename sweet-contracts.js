@@ -63,8 +63,6 @@ macro vbl {
     case $comb => {
 	C.$comb 
     }
-    // bugs out when I try to use ellipses. 
-    // Matches this pattern all the time
     case [$type $[...]] => {
     	C.arr([C.___(vbl $type)])
     }
@@ -91,19 +89,6 @@ macro def {
 }
 
 macro fun {
-    case ($($param:ident : $type) (,) ...) -> $ret_type var $handle:ident = function $args $body => {
-	var $handle = C.guard(
-	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
-	    function $args $body);
-    }
-    case ($($param:ident : $type) (,) ...) -> $ret_type function $handle $args $body => {
-	var $handle = C.guard(
-	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
-	    function $args $body);
-    }
-}
-
-macro fun {
     case ($type (,) ...) -> $ret_type var $handle:ident = function $args $body => {
 	var $handle = C.guard(
 	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
@@ -124,15 +109,3 @@ macro obj {
 
 // var contracts = window['contracts-js'];
 // setupContracts(contracts)
-
-// // alternation chain
-// fun (((Num or Str) or Bool)) -> ((Num or Str) or Bool)
-// function really_quacks(x) {
-//     return x;
-// }
-
-// //SUCCESS
-// document.writeln(really_quacks('duck'));
-// document.writeln(really_quacks(23));
-// // passes now
-// document.writeln(really_quacks(true));
