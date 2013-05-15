@@ -30,6 +30,10 @@ macro vbl {
     case ($($key $[:] $type) (,) ...) => {
 	C.object({$($key: (vbl $type),) ...})
     }
+    case (($($key $[:] $type) (,) ...) $[|] $pred) => {
+	C.object({$($key: (vbl $type),) ...}, 
+		 {invariant: vbl $pred})
+    }
     case [$type (,) ...] => {
 	C.arr([(vbl $type) (,) ...])
     }
@@ -42,6 +46,8 @@ macro vbl {
     case ($comb1 and $comb2) => {
 	C.and(vbl $comb1, vbl $comb2)
     }
+    //TODO: sort out this most inconsistent syntax between dependent function
+    //      contracts and object pre/post/invariants
     case (! ($arg:ident) -> $check:expr) => {
 	function ($arg) {
 	    return $check;

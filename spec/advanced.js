@@ -71,3 +71,9 @@ pre.b(3);
 // ppo.a = post.a - 13;
 // ppo.b(1);
 
+//object invariants
+
+obj ((x: Num, y: Str) | (!(o) -> o.x > 3))
+var spam = {x: 4, y: 'bazqux'};
+
+spam.x = 2;
