@@ -4,29 +4,50 @@ macro setupContracts {
     }
 }
 
+// by abstracting this out we actually get stuck with *more* parens
+macro opt_obj {
+
+    // case ($($key $[:] ! ($arg:ident) -> {$check ...}) (,) ...) => {
+    // 	{$($key: function ($arg) {$check ...},) ...}
+    // }
+    // case ($($key $[:] ! ($arg:ident) -> {$check ...})) this $[:] $obj => {
+    // 	{$($key: function ($arg) {$check ...},) ..., this: (vbl $obj)}
+    // }
+    case ($($key $[:] $type) (,) ...) => {
+    	{$($key: (vbl $type),) ...}
+    }
+}
+
 macro vbl {
     case ($p_type -> $ret_type) => {
 	C.fun(vbl $p_type, vbl $ret_type)
     }
+// case (($p_type -> $ret_type) $[|] $opts) => {
+//     	C.fun([vbl $p_type], vbl $ret_type, opt_obj $opts)
+//     }
+    // this is kinda nice, but we're still stuck with parenthesized predicates...
+    case (($p_type -> $ret_type) $[|] $($key $[:] $opt) (,) ...) => {
+    	C.fun([vbl $p_type], vbl $ret_type, {$($key: (vbl $opt),) ...})
+    }
     // TODO: find an elegant way to allow a method to have 
     //  pre/post (not both), if possible
-    case (($p_type -> $ret_type) $[|]
-             pre:  $pre_cond
-             post: $post_cond) => {
-	C.fun([vbl $p_type], vbl $ret_type, {
-	    pre: vbl $pre_cond,
-	    post: vbl $post_cond})
-    }
-    case (($p_type -> $ret_type) $[|]
-             pre:  $pre_cond) => {
-	C.fun([vbl $p_type], vbl $ret_type, {
-	    pre: vbl $pre_cond})
-    }
-    case (($p_type -> $ret_type) $[|]
-             post: $post_cond) => {
-	C.fun([vbl $p_type], vbl $ret_type, {
-	    post: vbl $post_cond})
-    }
+    // case (($p_type -> $ret_type) $[|]
+    //          pre:  $pre_cond
+    //          post: $post_cond) => {
+    // 	C.fun([vbl $p_type], vbl $ret_type, {
+    // 	    pre: vbl $pre_cond,
+    // 	    post: vbl $post_cond})
+    // }
+    // case (($p_type -> $ret_type) $[|]
+    //          pre:  $pre_cond) => {
+    // 	C.fun([vbl $p_type], vbl $ret_type, {
+    // 	    pre: vbl $pre_cond})
+    // }
+    // case (($p_type -> $ret_type) $[|]
+    //          post: $post_cond) => {
+    // 	C.fun([vbl $p_type], vbl $ret_type, {
+    // 	    post: vbl $post_cond})
+    // }
     case ($($key $[:] $type) (,) ...) => {
 	C.object({$($key: (vbl $type),) ...})
     }
@@ -46,18 +67,15 @@ macro vbl {
     case ($comb1 and $comb2) => {
 	C.and(vbl $comb1, vbl $comb2)
     }
-    //TODO: sort out this most inconsistent syntax between dependent function
-    //      contracts and object pre/post/invariants
-    case (! ($arg:ident) -> $check:expr) => {
+    case (! ($arg:ident) -> { $check ... }) => {
 	function ($arg) {
-	    return $check;
+	    $check ...
 	}
     }
-    case (! ($args:ident, $result:ident) -> $check:expr) => {
+    case (! ($args:ident, $result:ident) -> { $check ... }) => {
 	function ($args) { 
     	    return C.check(
-		function ($result) 
-	            $check, 'foobar')
+		function ($result) { $check ... }, 'foobar')
 	}
     }
     case $comb => {
@@ -129,5 +147,20 @@ macro obj {
     }
 }
 
-// var contracts = window['contracts-js'];
-// setupContracts(contracts)
+var contracts = window['contracts-js'];
+setupContracts(contracts)
+
+
+obj (a: Num, 
+     b: ((Num -> Num) |
+          pre: (!(o) -> { return o.a > 10; }),
+          post: (!(o) -> { return o.a > 20; }),
+	  this: (a: Num, b: (Num->Num))))
+var ppo = {a: 3, b: function (x) {return this.a = this.a + x;} };
+ppo.b(3);
+
+// obj (a: Num, 
+//      b: ((Num -> Num) |
+//         (pre: (!(o) -> o.a > 10),
+//         post: (!(o) -> o.a > 20))))
+// var ppo = {a: 12, b: function (x) {return this.a = this.a + x;} };
