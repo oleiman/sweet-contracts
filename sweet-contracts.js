@@ -136,6 +136,12 @@ macro vbl {
     case ($comb1 and $comb2, $rest ...) => {
     	C.and(vbl ($comb1), vbl ($comb2)), vbl ($rest ...)
     }
+    case ($comb1 or $comb2 $rest ...) => {
+	vbl (($comb1 or $comb2) $rest ...)
+    }
+    case ($comb1 and $com2 $rest ...) => {
+	vbl (($comb2 and $comb2) $rest ...)
+    }
     case ($comb:ident, $rest ...) => {
 	C.$comb, vbl ($rest ...)
     }
@@ -158,7 +164,7 @@ macro vbl {
 	C.arr([vbl ($comb), vbl ($rest ...)])
     }
     case ($comb1 and $comb2) => {
-	c.and(vbl ($comb1), vbl ($comb2))
+	C.and(vbl ($comb1), vbl ($comb2))
     }
     case ($comb1 or $comb2) => {
 	C.or(vbl ($comb1), vbl ($comb2))
@@ -169,9 +175,9 @@ macro vbl {
 	}
     }
     // this is colliding with the regular ellipses
-    case ($comb $[...]) => {
-	C.___(vbl ($comb))
-    }
+    // case ($comb $[...]) => {
+    // 	C.___(vbl ($comb))
+    // }
     case [$comb] => {
     	C.arr([vbl ($comb)])
     }
@@ -267,50 +273,38 @@ macro obj {
 var contracts = window['contracts-js'];
 setupContracts(contracts)
 
-vbl [Num, Str]
+// still need to parenthesize the function, which kind of makes sense...
+//   can we really define associativity? can't really backtrack
+vbl (Num or Bool or Str or ((Num)->Str))
 
-vbl (Str or Str, ? Num, (Bool, Num) -> (Str or Bool), [Num, Str], Num)
+// fun (Num or Bool or Str or (Num)->(Str)) -> (Str or Bool)
+// function baz (x) { return x; }
 
-fun (Num, {x: (Num) -> Str | 
-    pre: !(x) -> {return x.a > 10;}, 
-    post: !(x) -> {return x.a > 20}
-     }) ==> (Str or Num)
-function baz (x, y) { return y; }
+// vbl [Num, Str]
 
-fun (Num, #{name: Str}) -> (Str)
-function batch (x) { return this.name; }
+// vbl (Str or Str, ? Num, (Bool, Num) -> (Str or Bool), [Num, Str], Num)
 
-obj {x: (Num) -> Str | 
-       pre: !(x) -> {return x.a > 10;}, 
-       post: !(x) -> {return x.a > 20} }
-var see = {x: function(y) {return y > 3;}};
+// fun (Num, {x: (Num) -> Str | 
+//     pre: !(x) -> {return x.a > 10;}, 
+//     post: !(x) -> {return x.a > 20}
+//      }) ==> (Str or Num)
+// function baz (x, y) { return y; }
+
+// fun (Num, #{name: Str}) -> (Str)
+// function batch (x) { return this.name; }
+
+// obj {x: (Num) -> Str | 
+//        pre: !(x) -> {return x.a > 10;}, 
+//        post: !(x) -> {return x.a > 20} }
+// var see = {x: function(y) {return y > 3;}};
 
 // fun (Num, Str or Bool, (Str)->(Str or Num)) -> (Num)
 // function baz (x, y, z) { return x; }
 
-// vbl {x: Num, y: (Str) -> ! (args, result) -> { return args[0]} }
-
-fun (Num or Bool, Str) -> ! (args, result) -> { return args[0] > result; } 
-function foo (x, y) { return x - 1; }
-
-// var q = opts (pre: ! (x) -> { return x.a > 10; })
-
+// fun (Num or Bool, Str) -> ! (args, result) -> { return args[0] > result; } 
+// function foo (x, y) { return x - 1; }
 
 // fun (Num or Str, Str or Bool) -> (Str and Str or Num)
 // function bar(x, y) {
 //     return y + x;
 // }
-
-// obj (a: Num, 
-//      b: ((Num -> Num) |
-//           pre: (!(o) -> { return o.a > 10; }),
-//           post: (!(o) -> { return o.a > 20; }),
-// 	  this: (a: Num, b: (Num->Num))))
-// var ppo = {a: 3, b: function (x) {return this.a = this.a + x;} };
-// ppo.b(3);
-
-// obj (a: Num, 
-//      b: ((Num -> Num) |
-//         (pre: (!(o) -> o.a > 10),
-//         post: (!(o) -> o.a > 20))))
-// var ppo = {a: 12, b: function (x) {return this.a = this.a + x;} };
