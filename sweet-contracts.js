@@ -14,14 +14,6 @@ macro bang {
     }
 }
 
-macro def {
-    case $handle:ident ($($param:ident : $type) (,) ...) : $ret_type $body => { 
-        var $handle = C.guard(
-	    C.fun([(vbl $type) (,) ...], vbl $ret_type),
-	    function ($($param,) ...) $body);
-    }
-}
-
 // TODO: add invariant sytax
 //       even though it doesn't work (on account of contracts.js)
 macro vbl {
@@ -126,19 +118,18 @@ macro fun {
     	    function $args $body);
     }
     
-    // an experiment
+    // an experiment. does this make sense for 'this' contract syntax
     case $params -> $ret $[#] $this function $handle $args $body => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl $ret, {this: vbl $this}),
     	    function $args $body);
     }
-
     case $params -> ! ($argl:ident, $result:ident) -> {$check ...} function $handle $args $body => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl (! ($argl, $result) -> {$check ...})),
     	    function $args $body);
     }
-    case $params -> $ret var $handle = $def:expr => {
+    case $params -> $ret $[#] $this var $handle = $def:expr => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl $ret),
     	    $def);
@@ -148,6 +139,8 @@ macro fun {
     	    C.fun([vbl $params], vbl (! ($argl, $result) -> {$check ...})),
     	    $def);
     }
+
+    // TODO: decide whether it makes sense to have a 'this' contract on callOnly/newOnly
 
     // no new
     case $params --> $ret function $handle $args $body => {
