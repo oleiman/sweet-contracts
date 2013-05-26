@@ -45,7 +45,6 @@ describe("functions with objects", function() {
 	}).to.throwException();
     });
 
-   // noticing that these basically never fail, anyway
    it("should handle optional object properties", function() {
        expect(baz(obj3, 'z')).to.be(23);
    });
@@ -70,12 +69,14 @@ describe("functions with arrays", function() {
 	expect(function(){sel([1,'2'])}).to.throwException();
     });
 
-    fun ([Str or Bool, Bool ...]) -> (Str or Bool)
+    fun ([Str or Num, Bool ...]) -> (Str or Bool or Num)
     function arry(a, i) {
 	return a[i];
     }
     it("should handle 'arbitrarily many of...' contracts", function() {
 	expect(arry(['foo', true, false, true],3)).to.be(true);
+	expect(arry(['foo', true, false, true],0)).to.be('foo');
+	expect(arry([42, true, false, true],0)).to.be(42);
     });
 
     it("should fail when appropriate", function() {
