@@ -1,7 +1,7 @@
 sweet-contracts
 ===============
 
-A collection of sweet.js macros that provide contract support for JavaScript! Inspired and motivated by [contracts.coffee](http://www.disnetdev.com/contracts.coffee). Made possible by [sweet.js](http://sweetjs.org). 
+A collection of sweet.js macros that provide contract support for JavaScript! Inspired and motivated by [contracts.coffee](http://www.disnetdev.com/contracts.coffee). Powered by [contracts.js](http://disnetdev.com/contracts.js/). Made possible by [sweet.js](http://sweetjs.org).
 
 ###Let's start simple...
 
@@ -120,8 +120,60 @@ The `this` contract allows us to ensure that, when a function is called, `this` 
 
 ###Objects
 
-    
+As you might expect, object properties can be wrapped in various contracts:
 
+    obj {
+          a: Str,
+          b: Num,
+          f: (Num) -> Num
+        }
+    var o = {a: "bob", b: 23, f: function (x) -> x + 1 };
 
+But take note that object (and array) contracts are not checked until the object it encloses is referenced. That is, you could assign a contract-violating object to `o`, but you won't get your error until you reference the field which violates the contract.
 
-    
+Nested objects and optional properties:
+
+    obj {
+          ob: { a: Str },
+          a: Num,
+          b: ?Str
+        } 
+    var o = { ob: { a: "baz" }, a: 23 }; 
+
+How about a recursive object?
+
+    obj {
+          a: Num,
+          b: Self,
+          c: (Num) -> Self,
+          inner: { y: Bool, z: Self }
+        }
+    var o = { /*stuff*/ };
+
+The `Self` contract is built into contracts.js and refers to the closest enclosing object. Remember that the `Self` contract requires only a reference to a similar object, not a reference to precisely the same object. This is probably obvious (we're all familiar with the concept of an infinite recursion...), but it's worth noting anyway.
+
+Now let's take a look at objects with functions which have pre and post conditions:
+
+    obj {
+          a: Num,
+	 f: (Num) -> Num | 
+ 	     pre: !(o) -> { return o.a > 10; }
+              post: !(o) -> { return o.a > 20; }
+        }
+    var o = { a: 23, f: function (x) { this.a = this.a + x; } };
+
+The pre and post conditions get called with the object to which the function belongs.
+
+Object invariants are being put off on account of some bugs in the contracts.js library.
+
+###Arrays
+
+Basic arrays:
+
+    arr [Num, Str, [Bool, Num]]
+    var a1 = [1, '2', [true, 23]];
+
+It's worth noting that the outer array contract only covers the first three elements of 	`a`, and the inner array contract covers only the first two elements of `a[2]`. The following array, covered by the same contract, would be just as suitable:
+
+    var a2 = [1, '2', [true, 23, "qux"], "whatever"];
+
