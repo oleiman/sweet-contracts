@@ -1,3 +1,5 @@
 *~
 *.test*
 build
+docs.js
+sandbox.js

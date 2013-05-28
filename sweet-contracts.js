@@ -5,17 +5,18 @@ macro setupContracts {
 }
 
 macro bang {
-    case function ($arg:ident) { $check ... }, $name:lit => {
+    case ($arg:ident) { $check ... }, $name:lit => {
 	C.check(function ($arg) { $check ... }, $name)
     }
     
-    case function $handle:ident ($arg:ident) { $check ... }, $name:lit => {
+    case $handle:ident ($arg:ident) { $check ... }, $name:lit => {
 	var $handle = C.check(function ($arg) { $check ... }, $name)
     }
 }
 
 // TODO: add invariant sytax
 //       even though it doesn't work (on account of contracts.js)
+// TODO: figure out "shift/reduce" like error with operators mixed with functions
 macro vbl {
     case ($[?] $comb1, $rest ...) => {
 	vbl (? $comb1), vbl ($rest ...)
