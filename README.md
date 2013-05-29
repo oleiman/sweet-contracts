@@ -49,8 +49,8 @@ And don't worry, all that whitespace is totally optional. Sweet.js, the macro en
 
 You're not restricted to a set of predefined contract combinators, either. Defining your own is as simple as writing a suitable predicate function.
 
-    var Even = bang (x) { return x % 2 === 0; }
-    var Odd  = bang (x) { return x % 2 !== 0; }
+    var Even = bang (x) { return x % 2 === 0; }, 'Even'
+    var Odd  = bang (x) { return x % 2 !== 0; }, 'Odd'
 
 That goofy bang syntax is a result of a current limitation of the macro engine. This will get cleaned up soon.
 
