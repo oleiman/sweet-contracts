@@ -3,6 +3,8 @@ sweet-contracts
 
 A collection of sweet.js macros that provide contract support for JavaScript! Inspired and motivated by [contracts.coffee](http://www.disnetdev.com/contracts.coffee). Powered by [contracts.js](http://disnetdev.com/contracts.js/). Made possible by [sweet.js](http://sweetjs.org).
 
+You may notice that the syntax (and documentation...) of `sweet-contracts` bears a striking resemblance `contracts.coffee`. This is by design. The idea is to get roughly the same functionality and smooth syntax without transmogrifying existing code into CoffeeScript. Also, we wanted to present something cool you can do with `sweet.js` which you couldn't otherwise do in pure JS.
+
 ###Let's start simple...
 
 Try decorating a regular old JavaScript function with a contract:
@@ -22,7 +24,7 @@ So what happens if we call `dbl` incorrectly?
     Parent contracts:
     (Num) -> Num 
 
-Awesome! How about objects and arrays?
+Awesome! I bet that would have been really hard to debug! How about objects and arrays?
 
     obj { 
           name: Str,
@@ -49,16 +51,47 @@ And don't worry, all that whitespace is totally optional. Sweet.js, the macro en
 
 You're not restricted to a set of predefined contract combinators, either. Defining your own is as simple as writing a suitable predicate function.
 
-    var Even = bang (x) { return x % 2 === 0; }, 'Even'
-    var Odd  = bang (x) { return x % 2 !== 0; }, 'Odd'
+    var Even = check(function(x) { return x % 2 === 0; }, 'Even');
 
-That goofy bang syntax is a result of a current limitation of the macro engine. This will get cleaned up soon.
+Keep in mind that slapping a contract on your function is not the magic bullet for programming in dynamic languages. The onus is still on you to write semantically robust code, but sweet-contracts aims to lighten the load a bit.
 
-Keep in mind that slapping a contract on your function is not the magic bullet for programming in dynamic languages. The onus is still on you to write semantically meaningful code, but sweet-contracts aims to lighten your load a bit.
+###Usage
 
-###Installation and Dependencies
+NB: I haven't published this as an npm package yet, but you can clone the repository and use the npm infrastructure from inside the project directory.
 
-To be fleshed out...
+The best (and easiest) way to use sweet-contracts is to install it via npm:
+
+    npm install sweet-contracts
+
+This should take care of any and all dependencies automagically. Now, you can go ahead and create a file `test_contracts.js`:
+
+    var contracts = require("contracts.js");
+    setupContracts(contracts);
+
+    fun (Num) -> Num
+    function dbl(x) { return x + x; }
+
+    console.log(dbl(4));
+
+Go ahead and compile it using `sweet-contracts`:
+
+    $ sweet-contracts -o out.js test_contracts.js
+    $ node --harmony out.js
+    8
+
+Notice that you need to require `contracts.js` and pass it to the `setupContracts` macro any time you want to compile a file containing `sweet-contracts` syntax. This makes the module exported by `contracts.js` available to the `sweet-contracts` macros. You don't need to worry about this unless you forget those first two lines.
+
+Additionally, `contracts.js` makes use of some experimental JavaScript features (such as the WeakMap and Proxies). If you want to run the emitted code in node, you will need to pass the `--harmony` option (the libraries themselves will have been installed by npm). Similarly, if you want to run the code in a browser, you will need to enable experimental JavaScript.
+
+####Testing
+
+If you want to fiddle with this (which we hope you will), just install with the `dev` dependencies:
+
+    npm install --dev
+
+And run the tests:
+
+    npm test
 
 ###Functions
 
@@ -150,7 +183,7 @@ How about a recursive object?
         }
     var o = { /*stuff*/ };
 
-The `Self` contract is built into contracts.js and refers to the closest enclosing object. Remember that the `Self` contract requires only a reference to a similar object, not a reference to precisely the same object. This is probably obvious (we're all familiar with the concept of an infinite recursion...), but it's worth noting anyway.
+The `Self` contract is built into contracts.js and refers to the closest enclosing object. Remember that the `Self` contract requires only a reference to a similar object, not a reference to precisely the same object.
 
 Now let's take a look at objects with functions which have pre and post conditions:
 
@@ -162,7 +195,7 @@ Now let's take a look at objects with functions which have pre and post conditio
         }
     var o = { a: 23, f: function (x) { this.a = this.a + x; } };
 
-The pre and post conditions get called with the object of which the object is a member.
+The pre and post conditions are parameterized by the enclosing object.
 
 Object invariants currently don't work (on account of a bug in contracts.js where undefined is passed into the invariant predicate), but here's the syntax anyway:
 
@@ -233,7 +266,7 @@ Assign a check to a variable:
 
     var Num = check(function(x) { return typeof(x) === 'number'; }, 'Num');
 
-Or let the `check` macro save you from typing `var` yet again:
+Or let the `check` macro save you from typing `var` for the zillionth time:
 
     check(Str, function(x) { return typeof(x) === 'string'; }, 'Str');
 
