@@ -1,0 +1,43 @@
+{
+  "name": "sweet-contracts",
+  "description": "Syntactically Succinct Contracts for JavaScript",
+  "main": "lib/sweet-contracts.js",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "author": "Oren Leiman",
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/oleiman/sweet-contracts/master/LICENSE.BSD"
+    }
+  ],
+  "scripts": {
+    "test": "node --harmony build"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "bin": {"sweet-contracts": "bin/sweet-contracts"},
+  "dependencies": {
+    "sweet.js": //fill this in when tim updates the sjs 'binary'
+    "contracts-js": "~0.3.4"
+  }
+  "devDependencies": {
+    "mocha": "~1.10.0",
+    "expect.js": "~0.2.0",
+    "shelljs": "~0.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/oleiman/sweet-contracts"
+  },
+  "keywords": [
+    "contracts",
+    "macros",
+    "javascript"
+  ],
+  "license": "BSD"
+}
+   
