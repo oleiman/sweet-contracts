@@ -156,24 +156,85 @@ Now let's take a look at objects with functions which have pre and post conditio
 
     obj {
           a: Num,
-	 f: (Num) -> Num | 
- 	     pre: !(o) -> { return o.a > 10; }
+	      f: (Num) -> Num | 
+ 	          pre:  !(o) -> { return o.a > 10; },
               post: !(o) -> { return o.a > 20; }
         }
     var o = { a: 23, f: function (x) { this.a = this.a + x; } };
 
 The pre and post conditions get called with the object to which the function belongs.
 
-Object invariants are being put off on account of some bugs in the contracts.js library.
+Object invariants currently don't work (on account of a bug in contracts.js where undefined is passed into the invariant predicate), but here's the syntax anyway:
+
+    obj {
+          a: Num,
+          f: (Num) -> Num |
+              pre:  !(o) -> { return o.a > 10; },q
+              post: !(o) -> { return o.a > 20; }
+        } | 
+         invariant: !(o) -> { 
+             return o.a > 0 && o.a < 100; 
+         }
+    var o = { a: 42, f: function (x) { this.a = this.a + x; } };
 
 ###Arrays
 
 Basic arrays:
 
     arr [Num, Str, [Bool, Num]]
-    var a1 = [1, '2', [true, 23]];
+    var a = [1, '2', [true, 23]];
 
 It's worth noting that the outer array contract only covers the first three elements of 	`a`, and the inner array contract covers only the first two elements of `a[2]`. The following array, covered by the same contract, would be just as suitable:
 
-    var a2 = [1, '2', [true, 23, "qux"], "whatever"];
+    var a = [1, '2', [true, 23, "qux"], "whatever"];
 
+Multiple elements of a single type:
+
+    arr [Num...]
+    var a = [42, 23, 93, 777, 8];
+
+The `...` operator ensures that the array will contain only `Num`s.
+
+Mixed arrays:
+
+    arr [Bool, Str, Num...]
+    var a = [false, "qux", 74, 8, 9]
+
+This requires that the first two elements of the array pass the two single contracts at the beginning. The rest of the elements must be `Num`s. Note that, like optional function parameters, the contract with the `...` operator must be in the last position of the array contract.
+
+###Contract Operators
+
+The `or` contract:
+
+    obj { a: Num or Str }
+    var o = { a: 8 }
+
+Here the `o.a` must pass either the `Num` or `Str` contract. Note that since functions and object/array contracts have deferred checking (i.e. the contract is not checked until the function is called/object field is referenced), only one function/object can be used with `or`. 
+
+The `and` contract:
+
+    obj { a: Num and Even }
+    var o = { a: 42 }
+
+The `a` property must pass both contracts. Just as with `or`, you can't use multiple function/object contracts with the `and` operator.
+
+It's worth noting that, if you want to use a function contract as an operand, you must enclose it in parentheses. This is a difficulty introduced by the recursive macro definitions used to implement sweet-contracts.
+
+    obj { a: Num or ((Str)->Bool) }
+    var o = { a: function(s) { return s === "quuux"; } };
+
+One final thing is that notions of precedence between `and` and `or`, which you might be familiar from Boolean Algebra, are absent from sweet-contracts. In any event, if you want anything more complicated than basic left associativity, you can just use parens.
+
+###Custom Contracts
+
+You can also define your own personal contracts! There are two ways to do this.
+
+Assign a check to a variable:
+
+    var Num = check(function(x) { return typeof(x) === 'number'; }, 'Num');
+
+Or let the `check` macro save you from typing `var` one more time:
+
+    check(Str, function(x) { return typeof(x) === 'string'; }, 'Str');
+
+The final argument to the `check` macro, a string, will server to identify the resulting contract in exceptions resulting from its violation.

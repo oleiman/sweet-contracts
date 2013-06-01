@@ -4,12 +4,12 @@ macro setupContracts {
     }
 }
 
-macro bang {
-    case ($arg:ident) { $check ... }, $name:lit => {
+macro check {
+    case (function ($arg:ident) { $check ... }, $name:lit) => {
 	C.check(function ($arg) { $check ... }, $name)
     }
     
-    case $handle:ident ($arg:ident) { $check ... }, $name:lit => {
+    case ($handle:ident, function ($arg:ident) { $check ... }, $name:lit) => {
 	var $handle = C.check(function ($arg) { $check ... }, $name)
     }
 }
@@ -35,6 +35,10 @@ macro vbl {
     case ($p_type -> $ret_type, $rest ...) => {
     	vbl ($p_type -> $ret_type), vbl ($rest ...)
     }
+    case {$key $[:] $rest ...} $[|] invariant $[:] !($arg:ident) -> {$check ...} => {
+    	C.object({ $key: vbl ($rest ...) }, 
+    		 { invariant: function($arg) { $check ... } })
+    }
     case {$key $[:] $rest ...} => {
 	C.object({$key: vbl ($rest ...)})
     }
@@ -49,7 +53,6 @@ macro vbl {
     case ($[#] $this) => {
 	vbl ($this)
     }
-    // can't figure our how to get arbitrarily many and/or withouut parens...
     case ($comb1 or $comb2, $rest ...) => {
     	C.or(vbl ($comb1), vbl ($comb2)), vbl ($rest ...)
     }
@@ -191,7 +194,10 @@ macro fun {
 // double duty objects and arrays
 macro obj {
     case $contract var $handle:ident = $obj => {
-	var $handle = C.guard(vbl $contract, $obj)
+	var $handle = C.guard(vbl $contract, $obj);
+    }
+    case $contract $[|] invariant $[:] ! ($var:ident) -> { $check ... } var $handle:ident = $obj => {
+        var $handle = C.guard(vbl $contract | invariant: !($var) -> { $check ... }, $obj);
     }
 }
 

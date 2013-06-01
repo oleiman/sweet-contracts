@@ -50,7 +50,7 @@ describe("callOnly functions", function() {
 describe("object member functions with pre/post conditions", function() {
     obj {a: Num,
 	 b: (Num)->Num |
-	     pre:  !(o) -> { return o.a > 10; }
+	     pre:  !(o) -> { return o.a > 10; },
 	     post: !(o) -> { return o.a > 20; }
 	 }
     var ppo = {a: 12, b: function (x) { return this.a += x; } };
@@ -70,8 +70,22 @@ describe("object member functions with pre/post conditions", function() {
 	
     });
 
-    // TODO: add object invariant stub, even though they don't work
-    //       also, figure out what 'this' contracts for objects really mean...
+    //NB: As noted in the docs, object invariants don't work for now. 
+    //    This is due to a bug in the underlying contracts.js library
+    // obj {a: Num,
+    // 	 b: (Num)->Num |
+    // 	     pre:  !(o) -> { return o.a > 10; },
+    // 	     post: !(o) -> { return o.a > 20; }
+    // 	} |
+    //      invariant: !(o) -> { 
+    // 	     return o.a > 0 && o.a < 100; 
+    // 	 }
+    // var invo = {a: 12, b: function (x) { return this.a += x; } };
+    
+    // it("should fail if the invariant is violated", function() {
+    // 	expect(function() {inv.f(90)}).to.throwException();
+    // });
+
 });
 
 describe("functions with a 'this' contract", function() {
