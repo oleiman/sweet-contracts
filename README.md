@@ -102,7 +102,7 @@ And function that *must* be used with `new`:
 
 We also get dependent functions:
 
-    fun (Num) -> !(result, args) -> { result > args[0]; }
+    fun (Num) -> !(result, args) -> { return result > args[0]; }
     function inc(n) { return n + 1; }
 
 After the function is evaluated, its result and original argument list are passed into the dependent function. If its return value is truthy, then everything is fine. Otherwise, we get a contract violation exception.
@@ -127,7 +127,7 @@ As you might expect, object properties can be wrapped in various contracts:
           b: Num,
           f: (Num) -> Num
         }
-    var o = {a: "bob", b: 23, f: function (x) -> x + 1 };
+    var o = {a: "bob", b: 23, f: function (x) -> { return x + 1; };
 
 But take note that object (and array) contracts are not checked until the object it encloses is referenced. That is, you could assign a contract-violating object to `o`, but you won't get your error until you reference the field which violates the contract.
 
@@ -162,14 +162,14 @@ Now let's take a look at objects with functions which have pre and post conditio
         }
     var o = { a: 23, f: function (x) { this.a = this.a + x; } };
 
-The pre and post conditions get called with the object to which the function belongs.
+The pre and post conditions get called with the object of which the object is a member.
 
 Object invariants currently don't work (on account of a bug in contracts.js where undefined is passed into the invariant predicate), but here's the syntax anyway:
 
     obj {
           a: Num,
           f: (Num) -> Num |
-              pre:  !(o) -> { return o.a > 10; },q
+              pre:  !(o) -> { return o.a > 10; },
               post: !(o) -> { return o.a > 20; }
         } | 
          invariant: !(o) -> { 
@@ -209,7 +209,7 @@ The `or` contract:
     obj { a: Num or Str }
     var o = { a: 8 }
 
-Here the `o.a` must pass either the `Num` or `Str` contract. Note that since functions and object/array contracts have deferred checking (i.e. the contract is not checked until the function is called/object field is referenced), only one function/object can be used with `or`. 
+Here `o.a` must clear either the `Num` or `Str` contract. Note that since functions and object/array contracts have deferred checking (i.e. the contract is not checked until the function is called/object field is referenced), only one function/object can be used with `or`. 
 
 The `and` contract:
 
@@ -233,7 +233,7 @@ Assign a check to a variable:
 
     var Num = check(function(x) { return typeof(x) === 'number'; }, 'Num');
 
-Or let the `check` macro save you from typing `var` one more time:
+Or let the `check` macro save you from typing `var` yet again:
 
     check(Str, function(x) { return typeof(x) === 'string'; }, 'Str');
 
