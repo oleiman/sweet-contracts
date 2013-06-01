@@ -3,3 +3,5 @@
 build
 docs.js
 sandbox.js
+test.js
+node_modules
