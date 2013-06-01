@@ -14,9 +14,6 @@ macro check {
     }
 }
 
-// TODO: add invariant sytax
-//       even though it doesn't work (on account of contracts.js)
-// TODO: figure out "shift/reduce" like error with operators mixed with functions
 macro vbl {
     case ($[?] $comb1, $rest ...) => {
 	vbl (? $comb1), vbl ($rest ...)
@@ -48,11 +45,6 @@ macro vbl {
     case ([$comb, $arr ...], $rest ...) => {
     	C.arr([vbl ($comb), vbl ($arr ...)]), vbl ($rest ...)
     }
-    // also, note that the '@' symbol is 'not allowed'
-    // the 'this' parameter now comes "after" the function contract
-    case ($[#] $this) => {
-	vbl ($this)
-    }
     case ($comb1 or $comb2, $rest ...) => {
     	C.or(vbl ($comb1), vbl ($comb2)), vbl ($rest ...)
     }
@@ -71,6 +63,7 @@ macro vbl {
     case ($comb, $rest ...) => {
 	vbl $comb, vbl ($rest ...)
     }
+
     // base cases
     case $p_type -> $ret_type $[|] $opts => {
     	C.fun ([vbl $p_type], vbl $ret_type, {
@@ -122,7 +115,6 @@ macro fun {
     	    function $args $body);
     }
     
-    // an experiment. does this make sense for 'this' contract syntax
     case $params -> $ret $[#] $this function $handle $args $body => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl $ret, {this: vbl $this}),
@@ -135,7 +127,7 @@ macro fun {
     }
     case $params -> $ret $[#] $this var $handle = $def:expr => {
     	var $handle = C.guard(
-    	    C.fun([vbl $params], vbl $ret),
+    	    C.fun([vbl $params], vbl $ret, {this: vbl $this}),
     	    $def);
     }
     case $params -> ! ($argl:ident, $result:ident) -> {$check ...} var $handle = $def:expr => {
@@ -152,23 +144,38 @@ macro fun {
     	    C.fun([vbl $params], vbl $ret, {callOnly: true}),
     	    function $args $body);
     }
+
+    case $params --> $ret $[#] $this function $handle $args $body => {
+    	var $handle = C.guard(
+    	    C.fun([vbl $params], vbl $ret, {callOnly: true, this: vbl $this}),
+    	    function $args $body);
+    }
+
     case $params --> ! ($argl:ident, $result:ident) -> {$check ...} function $handle $args $body => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl (! ($argl, $result) -> {$check ...}), {callOnly: true}),
     	    function $args $body);
     }
+
     case $params --> $ret var $handle = $def:expr => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl $ret, {callOnly: true}),
     	    $def);
     }
+
+    case $params --> $ret $[#] $this var $handle = $def:expr => {
+    	var $handle = C.guard(
+    	    C.fun([vbl $params], vbl $ret, {callOnly: true, this: vbl $this}),
+    	    $def);
+    }
+
     case $params --> ! ($argl:ident, $result:ident) -> {$check ...} var $handle = $def:expr => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl (! ($argl, $result) -> {$check ...}), {callOnly: true}),
     	    $def);
     }
 
-    // only new
+    // only new - note that newOnly functions don't take a 'this' contract
     case $params ==> $ret function $handle $args $body => {
     	var $handle = C.guard(
     	    C.fun([vbl $params], vbl $ret, {newOnly: true}),
