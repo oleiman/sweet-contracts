@@ -66,8 +66,6 @@ Keep in mind that slapping a contract on your function is not the magic bullet f
 
 ###Usage
 
-NB: I haven't published this as an npm package yet, but you can clone the repository and use the npm infrastructure from inside the project directory.
-
 The best (and easiest) way to use sweet-contracts is to install it via npm:
 
     npm install sweet-contracts
