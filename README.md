@@ -54,8 +54,8 @@ And don't worry, all that whitespace is totally optional. Sweet.js, the macro en
 
 You're not restricted to a set of predefined contract combinators, either. Defining your own is as simple as writing a suitable predicate function.
 
-    var Even = check(function(x) { return x % 2 === 0; }, 'Even');
-    var Odd = check(function(x) { return x % 2 !== 0; }, 'Odd');
+    check(Even, function(x) { return x % 2 === 0; }, 'Even');
+    check(Odd, function(x) { return x % 2 !== 0; }, 'Odd');
 
     fun (Even) -> Odd
     function inc(x) {
@@ -269,11 +269,7 @@ One final thing is that notions of precedence between `and` and `or`, which you 
 
 You can also define your own personal contracts! There are two ways to do this.
 
-Assign a check to a variable:
-
-    var Num = check(function(x) { return typeof(x) === 'number'; }, 'Num');
-
-Or let the `check` macro save you from typing `var` for the zillionth time:
+The `check` macro both saves you from typing `var` for the zillionth time and namespaces the provided contract handle so everything runs smoothly:
 
     check(Str, function(x) { return typeof(x) === 'string'; }, 'Str');
 
