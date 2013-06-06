@@ -1,7 +1,10 @@
 sweet-contracts
 ===============
 
-A collection of sweet.js macros that provide contract support for JavaScript! Inspired and motivated by [contracts.coffee](http://www.disnetdev.com/contracts.coffee). Powered by [contracts.js](http://disnetdev.com/contracts.js/). Made possible by [sweet.js](http://sweetjs.org).
+A collection of sweet.js macros that provide contract support for JavaScript! 
+Enforce the runtime behavior of your code with beautiful syntax.
+Inspired and motivated by [contracts.coffee](http://www.disnetdev.com/contracts.coffee). 
+Powered by [contracts.js](http://disnetdev.com/contracts.js/). Made possible by [sweet.js](http://sweetjs.org).
 
 You may notice that the syntax (and documentation...) of `sweet-contracts` bears a striking resemblance `contracts.coffee`. This is by design. The idea is to get roughly the same functionality and smooth syntax without transmogrifying existing code into CoffeeScript. Also, we wanted to present something cool you can do with `sweet.js` which you couldn't otherwise do in pure JS.
 
@@ -52,12 +55,16 @@ And don't worry, all that whitespace is totally optional. Sweet.js, the macro en
 You're not restricted to a set of predefined contract combinators, either. Defining your own is as simple as writing a suitable predicate function.
 
     var Even = check(function(x) { return x % 2 === 0; }, 'Even');
+    var Odd = check(function(x) { return x % 2 !== 0; }, 'Odd');
+
+    fun (Even) -> Odd
+    function inc(x) {
+        return x + 1;
+    }
 
 Keep in mind that slapping a contract on your function is not the magic bullet for programming in dynamic languages. The onus is still on you to write semantically robust code, but sweet-contracts aims to lighten the load a bit.
 
 ###Usage
-
-NB: I haven't published this as an npm package yet, but you can clone the repository and use the npm infrastructure from inside the project directory.
 
 The best (and easiest) way to use sweet-contracts is to install it via npm:
 
@@ -65,7 +72,7 @@ The best (and easiest) way to use sweet-contracts is to install it via npm:
 
 This should take care of any and all dependencies automagically. Now, you can go ahead and create a file `test_contracts.js`:
 
-    var contracts = require("contracts.js");
+    var contracts = require("contracts-js");
     setupContracts(contracts);
 
     fun (Num) -> Num
@@ -79,13 +86,13 @@ Go ahead and compile it using `sweet-contracts`:
     $ node --harmony out.js
     8
 
-Notice that you need to require `contracts.js` and pass it to the `setupContracts` macro any time you want to compile a file containing `sweet-contracts` syntax. This makes the module exported by `contracts.js` available to the `sweet-contracts` macros. You don't need to worry about this unless you forget those first two lines.
+Notice that you need to require `contracts-js` and pass it to the `setupContracts` macro any time you want to compile a file containing `sweet-contracts` syntax. This makes the module exported by `contracts.js` available to the `sweet-contracts` macros. You don't need to worry about this unless you forget those first two lines.
 
-Additionally, `contracts.js` makes use of some experimental JavaScript features (such as the WeakMap and Proxies). If you want to run the emitted code in node, you will need to pass the `--harmony` option (the libraries themselves will have been installed by npm). Similarly, if you want to run the code in a browser, you will need to enable experimental JavaScript.
+Additionally, `contracts.js` makes use of some experimental JavaScript features (specifically WeakMaps and Proxies). If you want to run the emitted code in node, you will need to pass the `--harmony` option. Similarly, if you want to run the code in Chrome, you will need to go to about:flags and enable experimental JavaScript (harmony features are available without flags in recent versions of Firefox).
 
 ####Testing
 
-If you want to fiddle with this (which we hope you will), just install with the `dev` dependencies:
+If you want to fiddle with this project (which we hope you will), just install with the `dev` dependencies:
 
     npm install --dev
 
@@ -270,4 +277,4 @@ Or let the `check` macro save you from typing `var` for the zillionth time:
 
     check(Str, function(x) { return typeof(x) === 'string'; }, 'Str');
 
-The final argument to the `check` macro, a string, will server to identify the resulting contract in exceptions resulting from its violation.
+The final argument to the `check` macro, a string, will serve to identify the resulting contract in exceptions resulting from its violation.
