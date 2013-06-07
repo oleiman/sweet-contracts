@@ -10,7 +10,7 @@ describe("dependent function contracts", function() {
     fun (Str, Num) -> !(args, result) -> { return result > args[1]; }
     function strNum(x, y) {
 	return parseInt(x);
-n    }
+    }
     it("should appply a predicate to function return values", function() {
 	expect(strNum('5',4)).to.be.ok();
 	expect(function() {strNum('4',5)}).to.throwException();
